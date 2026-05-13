@@ -2,7 +2,7 @@
     "project": {
     "name": "portfolio-landing",
     "description": "B2C лендинг частного IT-мастера (Эрик). Тёплый дизайн, человечность, доверие. Без технических терминов. Форма обратной связи — единственный канал. Закрытая воронка продаж.",
-    "version": "1.3.1",
+    "version": "1.4.0",
     "date_updated": "2026-05-13",
     "status": "production-ready"
   },
@@ -57,6 +57,19 @@
       "src/app/actions.ts": "Server Action: submitContactForm — валидация, отправка в Telegram API, HTML-форматирование.",
       "src/app/layout.tsx": "Корневой layout: metadata, Geist шрифт, lang=ru.",
       "src/app/globals.css": "CSS-переменные тёплой палитры, .card, .gradient-text, .section-badge."
+    },
+    "deployment": {
+      "docker": {
+        "dockerfile": "Dockerfile (multi-stage: deps → build → runner)",
+        "compose": "docker-compose.yml (next-app + nginx)",
+        "nginx": "nginx/nginx.conf (reverse proxy, SSL, security headers)",
+        "management": "Makefile (build, up, down, logs, clean)"
+      },
+      "vercel": {
+        "enabled": true,
+        "repo": "https://github.com/kosarikee/portfolio-landing",
+        "env_vars": ["TELEGRAM_BOT_TOKEN", "TELEGRAM_CHAT_ID", "NEXT_PUBLIC_EMAIL"]
+      }
     },
     "key_principles": [
       "Строгая одностраничность — все блоки вертикально друг под другом",

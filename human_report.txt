@@ -171,9 +171,14 @@
 
    1. Добавьте фото в public/images/
    2. Проверьте форму: заполните и отправьте → должно прийти в Telegram
-   3. Если нужно — разместите на Vercel/Netlify
-   4. Хотите изменить порядок секций? Скажите
-   5. Хотите запустить субагентов для аудита? Готов
+   3. Разместите на своём сервере через Docker:
+      $ cp .env.example .env        # заполните токены
+      $ make build                  # собрать образ
+      $ make up                     # запустить
+      $ make logs                   # смотреть логи
+   4. Или на Vercel — импорт из GitHub → add env vars → Deploy
+   5. Хотите изменить порядок секций? Скажите
+   6. Хотите запустить субагентов для аудита? Готов
 
 ══════════════════════════════════════════════════════════════════
         ЛЕНДИНГ ГОТОВ К ЗАПУСКУ. ОСТАЛОСЬ ДОБАВИТЬ ФОТО.
@@ -184,7 +189,16 @@
 ИСТОРИЯ ВЕРСИЙ
 ──────────────────────────
 
-   v1.3.1 (2026-05-13) — Текущая
+   v1.4.0 (2026-05-13) — Текущая
+   • Полная Docker-сборка (Dockerfile + docker-compose.yml + Nginx)
+   • nginx.conf: reverse proxy, Let's Encrypt SSL, безопасность, кеширование статики
+   • Makefile для управления (build, up, down, logs, clean)
+   • .env.example с шаблоном переменных
+   • next.config.ts: output: "standalone" для production
+   • GitHub: https://github.com/kosarikee/portfolio-landing
+   • Vercel: готов к импорту (env vars: TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, NEXT_PUBLIC_EMAIL)
+
+   v1.3.1 (2026-05-13)
    • Удалён NEXT_PUBLIC_TELEGRAM_USERNAME из .env.local
    • Создан public/images/avatar.svg — профессиональная заглушка с инициалами
    • Исправлен битый <img> в AboutSection: onError fallback на SVG-аватар
