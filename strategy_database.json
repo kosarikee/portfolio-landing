@@ -1,0 +1,213 @@
+{
+    "project": {
+    "name": "portfolio-landing",
+    "description": "B2C лендинг частного IT-мастера (Эрик). Тёплый дизайн, человечность, доверие. Без технических терминов. Форма обратной связи — единственный канал. Закрытая воронка продаж.",
+    "version": "1.3.1",
+    "date_updated": "2026-05-13",
+    "status": "production-ready"
+  },
+  "stack": {
+    "framework": {
+      "name": "Next.js",
+      "version": "16.2.6",
+      "router": "App Router",
+      "reason": "SSR/SSG, встроенная оптимизация, Turbopack. Мгновенная сборка для статического лендинга."
+    },
+    "styling": {
+      "name": "Tailwind CSS",
+      "version": "4",
+      "features": [
+        "@theme inline для кастомных токенов",
+        "CSS-first конфигурация",
+        "JIT-компиляция"
+      ],
+      "reason": "CSS-first архитектура, нативные CSS-переменные, минимальный bundle."
+    },
+    "language": {
+      "name": "TypeScript",
+      "version": "5.x",
+      "reason": "Строгая типизация, автокомплит, предотвращение ошибок на этапе компиляции."
+    },
+    "fonts": {
+      "name": "Geist",
+      "provider": "next/font/google",
+      "subsets": ["latin", "cyrillic"],
+      "reason": "Современный гротеск от Vercel, оптимизирован под Next.js, минимальный CLS."
+    },
+    "icons": {
+      "name": "lucide-react",
+      "version": "^1.14.0",
+      "reason": "Tree-shaking, поименный импорт, минимальный вес. Заменяют стоковые фото и SVG-иллюстрации для 'человечного' стиля."
+    },
+    "server_actions": {
+      "name": "Next.js Server Actions",
+      "reason": "Безопасная отправка формы на стороне сервера. Токен бота хранится в .env.local и не попадает на клиент."
+    },
+    "telegram_api": {
+      "integration": "sendMessage (server-side only)",
+      "endpoint": "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage",
+      "security": "TELEGRAM_BOT_TOKEN и TELEGRAM_CHAT_ID — только на сервере через env",
+      "note": "Публичные ссылки на профиль Telegram полностью удалены. Все лиды — только через форму."
+    }
+  },
+  "architecture": {
+    "pattern": "Monolithic single-file — все компоненты внутри page.tsx",
+    "structure": {
+      "src/app/page.tsx": "Все секции + ContactForm компонент. Client Component ('use client').",
+      "src/app/actions.ts": "Server Action: submitContactForm — валидация, отправка в Telegram API, HTML-форматирование.",
+      "src/app/layout.tsx": "Корневой layout: metadata, Geist шрифт, lang=ru.",
+      "src/app/globals.css": "CSS-переменные тёплой палитры, .card, .gradient-text, .section-badge."
+    },
+    "key_principles": [
+      "Строгая одностраничность — все блоки вертикально друг под другом",
+      "Никаких стоковых фото и абстрактных иллюстраций — только lucide-react иконки",
+      "Тексты без технических терминов — для аудитории 30–55 лет",
+      "Mobile-first: touch-targets 44px/52px, адаптивная типографика, скрытие навигации на мобильных",
+      "Тёплая цветовая палитра (фон #fafaf9, акцент #2563eb)"
+    ],
+    "sections": [
+      {
+        "name": "ReviewForm",
+        "description": "Форма отправки отзыва с поддержкой фото. Прежде чем появиться на сайте — уходит на модерацию в Telegram.",
+        "features": [
+          "2 поля: Имя, Текст отзыва",
+          "Файловое поле: Прикрепить фото результата (опционально, accept=image/*)",
+          "Без фото → sendMessage (текстовое сообщение)",
+          "С фото → sendPhoto (multipart FormData, текст в caption)",
+          "Премодерация: отзыв не публикуется автоматически",
+          "Блок успеха с сообщением 'появится после проверки'"
+        ]
+      },
+      {
+        "name": "ContactForm",
+        "description": "Форма обратной связи с отправкой в Telegram. Использует Next.js Server Action.",
+        "features": [
+          "3 поля: Имя, Контакт, Описание задачи",
+          "Валидация на сервере (длина полей, обязательность)",
+          "useActionState для управления состояниями (idle/loading/success/error)",
+          "Спиннер загрузки при отправке",
+          "Блок успеха с иконкой и сообщением",
+          "Обработка ошибок Telegram API (401, 429, network)",
+          "HTML-экранирование пользовательского ввода (защита от XSS)",
+          "Форматирование сообщения в Telegram: имя, контакт, задача, дата",
+          "Автосброс формы после успешной отправки"
+        ]
+      },
+      {
+        "name": "NavBar",
+        "description": "Фиксированная навигация с якорными ссылками и CTA в Telegram",
+        "features": ["backdrop-filter blur", "Mobile: только логотип + кнопка Telegram", "Desktop: полное меню"]
+      },
+      {
+        "name": "HeroSection",
+        "description": "Главный экран: имя, позиционирование, CTA, список преимуществ",
+        "features": ["Градиентный фон", "Badge 'Частный мастер'", "Две CTA (Telegram + Обо мне)", "Галочки: выезд, гарантия, поддержка", "Scroll indicator с bounce"]
+      },
+      {
+        "name": "AboutSection",
+        "description": "Блок 'Обо мне': фото + текст о 10-летнем опыте",
+        "features": ["Фото из /images/profile.jpg (с fallback-заглушкой)", "Текст без самовосхваления, про пользу клиенту"]
+      },
+      {
+        "name": "TrustSection",
+        "description": "Три принципа: под ключ, поддержка, прозрачность",
+        "features": ["Карточки .card с иконками", "Hover-эффекты"]
+      },
+      {
+        "name": "ServicesSection",
+        "description": "4 услуги в сетке 2x2: Видеонаблюдение, Wi-Fi, ПК, Умный дом",
+        "features": ["Каждая карточка: иконка → заголовок → 'боль' → детали", "Акцент на проблеме клиента (pain-driven)", "Адаптивная сетка 1→2 колонки"]
+      },
+      {
+        "name": "ProjectsSection",
+        "description": "2 реальных кейса с описанием на человеческом языке",
+        "features": ["Теги технологий", "Карточки .card с hover"]
+      },
+      {
+        "name": "ReviewsSection",
+        "description": "Секция сбора отзывов. Заглушки удалены. Реальные отзывы появятся после модерации.",
+        "features": [
+          "Заголовок + подзаголовок",
+          "Кнопка 'Оставить отзыв о моей работе' (outline/secondary)",
+          "По клику — ReviewForm с полями и загрузкой фото",
+          "Карточки-заглушки удалены — ждут реальных отзывов"
+        ]
+      },
+      {
+        "name": "ContactsSection",
+        "description": "Подвал: CTA, соцсети (Telegram, GitHub, email), JSON-LD SEO",
+        "features": ["Telegram кнопка", "Иконка почты + email", "GitHub", "JSON-LD LocalBusiness schema", "Копирайт с динамическим годом"]
+      }
+    ]
+  },
+  "design_system": {
+    "theme": {
+      "type": "light (warm)",
+      "palette": {
+        "background": "#fafaf9",
+        "foreground": "#1c1917",
+        "surface": "#f5f5f4",
+        "accent": "#2563eb",
+        "accent_hover": "#1d4ed8",
+        "accent_light": "#dbeafe",
+        "muted": "#78716c",
+        "warm_accent": "#d97706"
+      }
+    },
+    "components": {
+      "card": "Белый фон, border #e7e5e4, border-radius 16px, hover-подсветка",
+      "gradient_text": "linear-gradient(135deg, #2563eb → #7c3aed)",
+      "section_badge": "Скруглённый pill, accent-light фон, accent-hover текст"
+    }
+  },
+  "seo": {
+    "json_ld": {
+      "type": "LocalBusiness",
+      "name": "Эрик — IT-мастер",
+      "areaServed": ["Москва", "Московская область"],
+      "sameAs": ["Telegram", "GitHub"]
+    },
+    "metadata": {
+      "title": "Эрик | IT-решения для дома",
+      "description": "Помогаю частным клиентам с умным домом, видеонаблюдением, настройкой сетей и компьютеров.",
+      "og": true
+    },
+    "performance": {
+      "next_build": true,
+      "static_pages": 4,
+      "typescript_errors": 0,
+      "build_time_seconds": 3.5
+    }
+  },
+  "configuration": {
+    "env_file": ".env.local",
+    "env_vars": {
+    "NEXT_PUBLIC_EMAIL": "Контактный email — клиентская часть",
+      "TELEGRAM_BOT_TOKEN": "Токен бота Telegram — только сервер (Server Action)",
+      "TELEGRAM_CHAT_ID": "ID чата для отправки уведомлений — только сервер"
+    },
+    "public_images": {
+      "profile": "/images/profile.jpg",
+      "reviews": ["/images/review-1.jpg", "/images/review-2.jpg", "/images/review-3.jpg"]
+    }
+  },
+  "key_decisions": [
+    "Закрытая воронка: все лиды только через форму. Никаких публичных ссылок на Telegram-профиль.",
+    "Отзывы через премодерацию: уходят в Telegram, НЕ публикуются на сайте автоматически",
+    "Форма отзыва: support multipart/form-data для отправки фото через sendPhoto",
+    "Форма обратной связи через Next.js Server Action — токен бота не покидает сервер",
+    "useActionState (React 19) — нативное управление состоянием формы без лишних библиотек",
+    "Валидация на сервере с понятными русскоязычными ошибками",
+    "HTML-экранирование пользовательского ввода перед отправкой в Telegram",
+    "Все секции в одном page.tsx для соблюдения строгой одностраничности",
+    "Убраны все стоковые фото и SVG-иллюстрации; заменены на lucide-react иконки",
+    "Тексты переписаны без технических терминов для аудитории 30–55 лет, не IT",
+    "Добавлены блоки «Обо мне», «Почему доверяют», «Отзывы» для усиления доверия",
+    "Тёплая палитра вместо тёмной — более человечная и доверительная",
+    "Контакты вынесены в .env.local через NEXT_PUBLIC_* переменные",
+    "Фото загружаются из public/images — пользователь добавит их позже",
+    "JSON-LD (LocalBusiness) для SEO-разметки",
+    "Touch-targets min-h:44px/52px для мобильной доступности",
+    "Отказ от B2B-стиля в пользу человеческого, доверительного тона"
+  ]
+}
